@@ -7,7 +7,8 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    # Lệnh cực kỳ quan trọng: Điều hướng tiến trình về máy plc-master1 của bạn
+    runs-on: self-hosted 
 
     steps:
     - name: 1. Lay ma nguon tu GitHub
@@ -28,11 +29,7 @@ jobs:
           vandaj98/nginx-agency:${{ github.sha }}
           vandaj98/nginx-agency:latest
 
-    - name: 4. SSH vao Swarm va tu dong Deploy
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SWARM_HOST }}
-        username: ${{ secrets.SWARM_USERNAME }}
-        key: ${{ secrets.SWARM_SSH_KEY }}
-        script: |
-          docker service update --image vandaj98/nginx-agency:${{ github.sha }} --resolve-image never nginx_nginx
+    - name: 4. Cap nhat Swarm truc tiep tai Local
+      # Không cần action SSH nữa, gọi trực tiếp lệnh docker update cực nhanh
+      run: |
+        docker service update --image vandaj98/nginx-agency:${{ github.sha }} --resolve-image never nginx_nginx
